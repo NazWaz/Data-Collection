@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from uuid import uuid4
 import pandas as pd
+import os
 
 class ProductScraper():
     '''
@@ -57,13 +58,13 @@ class ProductScraper():
         Gets individual product data in the form of id, name, desc, price, img.
         '''
         id = product.attrs["id"]
-
         data = product.find_all("td") # finds all td data types
         img_tag = data.pop() # removes image link
         self.download_img_from_tag(img_tag)
                 
-        data = [feature.text for feature in data]
+        data = self.clean_text_data(data)
         title, description, price = data
+        price = self.format_price(price)
 
         product_data = pd.DataFrame({ 
             "id": [id],
@@ -74,12 +75,23 @@ class ProductScraper():
         })
         self.df = pd.concat([self.df, product_data]) # combines headers and table
 
+    def format_price(self, price):
+        return float(price[1:].replace(",", ""))
+
     def download_img_from_tag(self, img_tag):
         img_src = img_tag.img.attrs["src"] # gets relative path for image
 
         img_src = self.page_url[:-16] + img_src[3:]
         print(img_src)
-        self.download_img(img_src, f"Demos/Images_1/{id}.jpg")
+        img_name = img_src.split("/")[-1]
+        img_name = img_name.replace(".jpg", "")
+        os.makedirs("Demos/Images_1", exist_ok = True)
+        self.download_img(img_src, f"Demos/Images_1/{img_name}.jpg")
+
+    def clean_text_data(self, data):
+        data = [feature.text for feature in data]
+        data = [text.replace("\n", "") for text in data]
+        return data
 
 
 if __name__ == "__main__":
