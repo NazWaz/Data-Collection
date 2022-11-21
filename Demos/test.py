@@ -1,4 +1,4 @@
-
+#%%
 import requests
 from bs4 import BeautifulSoup
 from uuid import uuid4
@@ -49,7 +49,6 @@ class ProductScraper():
         products = self.get_products(html)
         for product in products:
             self.get_product_data(product)
-
         print(self.df)
         self.df.to_csv("Demos/tabular_data.csv") # outputs table into csv file
         
@@ -60,12 +59,8 @@ class ProductScraper():
         id = product.attrs["id"]
 
         data = product.find_all("td") # finds all td data types
-        img = data.pop() # removes image link
-        img_src = img.img.attrs["src"] # gets relative path for image
-
-        img_src = self.page_url[:-16] + img_src[3:]
-        print(img_src)
-        self.download_img(img_src, f"Demos/Images_1/{id}.jpg")
+        img_tag = data.pop() # removes image link
+        self.download_img_from_tag(img_tag)
                 
         data = [feature.text for feature in data]
         title, description, price = data
@@ -79,6 +74,16 @@ class ProductScraper():
         })
         self.df = pd.concat([self.df, product_data]) # combines headers and table
 
+    def download_img_from_tag(self, img_tag):
+        img_src = img_tag.img.attrs["src"] # gets relative path for image
+
+        img_src = self.page_url[:-16] + img_src[3:]
+        print(img_src)
+        self.download_img(img_src, f"Demos/Images_1/{id}.jpg")
+
+
 if __name__ == "__main__":
     scraper = ProductScraper()
     scraper.get_all_product_data()
+
+# %%
