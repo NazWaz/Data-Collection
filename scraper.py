@@ -62,7 +62,7 @@ class Scraper():
     def get_movie_rating(self):
         print()
 
-    def get_all_movie_data(self):
+    def get_all_movie_textdata(self):
         self.get_movie_links()
         for mt in self.links[:5]:
             self.driver.get(mt)
@@ -71,10 +71,19 @@ class Scraper():
             self.get_movie_age_rating()
             self.get_movie_runtime()
             self.get_movie_genre()
-            
+    
+    def download_image(self):
+        pass
+
+    def download_image_from_tag(self, image_from_tag):
+        pass
+
+    def get_all_movie_imagedata(self):
+        pass
 
 
-scraper = Scraper()
+if __name__ == "__main__":
+    scraper = Scraper()
 
 #%%
 scraper.get_movie_title()
@@ -84,7 +93,7 @@ scraper.get_movie_runtime()
 
 
 #%%
-scraper.get_all_movie_data()
+scraper.get_all_movie_textdata()
 #%%
 scraper.driver.quit()
 #%%
