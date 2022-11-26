@@ -5,6 +5,7 @@ import os
 import time
 from datetime import datetime
 import json
+import requests
 #%%
 class Scraper():
 
@@ -123,8 +124,9 @@ class Scraper():
                 "genre": self.genres,
                 "ratings": self.ratings
                 }
+            self.download_data()
         print(self.data)
-        self.download_data()
+        
     
     def download_data(self):
         os.makedirs("raw_data", exist_ok = True)
