@@ -61,7 +61,7 @@ class Scraper():
     get_movie_image
         Scrapes movie image source link.
     download_image_data
-        Downloads image locally to an images folder as a jpeg file.
+        Downloads image locally to an images folder as a jpg file.
     download_text_data
         Downloads data dictionaries locally to a raw_data folder as a json file.
     get_all_movie_text_data
@@ -240,7 +240,8 @@ class Scraper():
         
     def download_image_data(self):
         '''
-        
+        Downloads the image locally to an images folder in a root folder "raw_data" using the image source link.
+        Each image is saved in the format date_time_id.jpg.
         '''
 
         os.makedirs("raw_data/images", exist_ok = True)
@@ -256,7 +257,7 @@ class Scraper():
 
     def download_text_data(self):
         '''
-        
+        Downloads the dictionary containing all the movie data locally as a json file in a root folder "raw_data".
         '''
 
         os.makedirs("raw_data", exist_ok = True)
@@ -265,7 +266,10 @@ class Scraper():
 
     def get_all_movie_textdata(self):
         '''
-        
+        Calls all the data scraping methods in one method to collect data from every top movie site.
+        Gets a list of each movie link and iterates through every scraping method using a for loop, loading each movie page.
+        Scrapes all text and image data, stores them in a dictionary and saves the images and dictionary locally.
+        The dictionary of data contains the id, timestamp, title, release date, age rating, runtime, genre, rating and image. 
         '''
 
         self.get_movie_links()
@@ -292,7 +296,6 @@ class Scraper():
                 "image": self.images
                 }
             self.download_text_data()
-        print(self.data)
 
 if __name__ == "__main__":
     scraper = Scraper()
