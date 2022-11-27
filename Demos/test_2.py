@@ -25,7 +25,11 @@ class LyricScraper():
         lyrics = self.driver.find_element(By.XPATH, "//div[@data-lyrics-container='true']").text
         song_name = self.driver.current_url.split("/")[-1]
         filename = os.path.join("Lyricsdata", f"{song_name}.txt")
+<<<<<<< HEAD
         with open(filename, "w") as f:
+=======
+        with open(filename, "w", encoding="utf-8") as f:
+>>>>>>> milestone5
             f.write(lyrics)
 
     def get_all_song_lyrics(self):
