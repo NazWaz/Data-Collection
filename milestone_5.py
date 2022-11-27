@@ -13,8 +13,10 @@ class Scraper():
 
     Attributes:
     ----------
+    driver: str
+        Loads the Chrome webdriver to be used with the Selenium commands.
     links: list
-        A list of links for each movie.
+        A list of url links for each movie.
     ids: list
         A list of ids associated with each top movie.
     timestamps: list
@@ -31,14 +33,15 @@ class Scraper():
         A list of genres for each movie.    
     ratings: list
         A list of ratings for each movie.
-    images:list
+    images: list
         A list of images for each movie.
+
     Methods:
     -------
     get_movie_links
-        Scrapes website for all top movie links.
+        Scrapes website for all top movie url links.
     get_id
-        Uses top movie link to generate unique ids for each data entry.
+        Uses top movie url link to generate unique ids for each data entry.
     get_timestamp
         Generates timestamp for when the data for each movie is scraped in the form of d-m-Y_H:M:S.
     get_movie_title
@@ -51,8 +54,6 @@ class Scraper():
         Scrapes movie age rating.
     get_movie_runtime
         Scrapes movie runtime.
-    get_g1
-        Scrapes for xpath of the movie genre.
     get_movie_genre
         Scrapes movie genre.
     get_movie_rating 
@@ -84,136 +85,180 @@ class Scraper():
         self.age_ratings = []
         self.runtimes = []
         self.genres = []
+        self.ratings = []
         self.images = []   
 
     def get_movie_links(self):
         '''
-        
+        Scrapes the top IMDB movies site for every top movie url link by first finding the XPATH 
+        containing the list of top movies and then finding a list of XPATHs containing the individual url links.
+        A for loop is used to iterate through each XPATH with the url links to take each one and append it to a list
+        if it is not already present (to avoid duplicates).
         '''
+
         movie_list = self.driver.find_element(By.XPATH, "//tbody[@class = 'lister-list']")
         movies = movie_list.find_elements(By.XPATH, "tr/td/a")
         for movie in movies:
-            l = movie.get_attribute("href")
-            if l not in self.links:
-                self.links.append(l)
+            movie_url = movie.get_attribute("href")
+            if movie_url not in self.links:
+                self.links.append(movie_url)
     
-    def get_id(self, mt):
+    def get_id(self, movie_link):
         '''
-        
+        Uses the url link for each movie and takes the last element as an integer to generate a unique id for each movie.
+        This id is the same as the ranking for each movie in the list of top movie.
+        The get_timestamp method is also called to get a timestamp for when the data scraping on a movie page begins.
+        Finally, each id is added to a list of ids.
+
+        Parameters:
+        ----------
+        movie_link: str
+            The url link for each movie.
         '''
-        self.i = int(mt.rsplit("_", 1)[-1])
+
+        self.id = int(movie_link.rsplit("_", 1)[-1])
         self.get_timestamp()
-        self.ids.append(self.i)
+        self.ids.append(self.id)
 
     def get_timestamp(self):
         '''
-        change datatype?
+        Takes the timestamp and converts it into a date time format in the form d-m-Y_H:M:S.
+        Each timestamp is added to a list of timestamps.
         '''
-        t = time.time()
-        d_t = datetime.fromtimestamp(t)
-        self.s_d_t = d_t.strftime("%d-%m-%Y_%H:%M:%S")
-        self.timestamps.append(self.s_d_t)
+
+        timestamp = time.time()
+        datetimestamp = datetime.fromtimestamp(timestamp)
+        self.datetime = datetimestamp.strftime("%d-%m-%Y_%H:%M:%S")
+
+        self.timestamps.append(self.datetime)
         
     def get_movie_title(self):
         '''
-        
+        Scrapes the movie site for the movie title, taking the text element of the title heading XPATH.
+        Each title is added to a list of titles.
         '''
-        t1 = self.driver.find_element(By.XPATH, "//h1[@data-testid = 'hero-title-block__title']").text
-        self.titles.append(t1)
+        
+        title = self.driver.find_element(By.XPATH, "//h1[@data-testid = 'hero-title-block__title']").text
 
-    def get_d1(self):
+        self.titles.append(title)
+
+    def get_release_age_runtime_xpath(self):
         '''
-        
+        Scrapes the movie site for the unordered list XPATH containing all the release date, age rating and runtime.
+        Used to access this list's XPATH easily later.
         '''
-        self.d1 = self.driver.find_element(By.XPATH, "//ul[@data-testid = 'hero-title-block__metadata']")
+
+        self.release_age_runtime_xpath = self.driver.find_element(By.XPATH, "//ul[@data-testid = 'hero-title-block__metadata']")
 
     def get_movie_release_date(self):
         '''
-        
+        Scrapes the movie site for the movie release date, taking the text element of the first list item in the XPATH.
+        The release date is set to an integer value also.
+        Each release date is added to a list of release dates.
         '''
-        self.get_d1()
-        d2 = int(self.d1.find_element(By.XPATH, "li[1]").text)
-        self.release_dates.append(d2)
+
+        release_date = int(self.release_age_runtime_xpath.find_element(By.XPATH, "li[1]").text)
+
+        self.release_dates.append(release_date)
 
     def get_movie_age_rating(self):
         '''
-        
+        Scrapes the movie site for the movie age rating, taking the text element of the second list item in the XPATH.
+        Each age rating is added to a list of age ratings.
         '''
-        self.get_d1()
-        ar1 = self.d1.find_element(By.XPATH, "li[2]").text
-        self.age_ratings.append(ar1)
+
+        age_rating = self.release_age_runtime_xpath.find_element(By.XPATH, "li[2]").text
+
+        self.age_ratings.append(age_rating)
 
     def get_movie_runtime(self):
         '''
-        
+        Scrapes the movie site for the movie runtime, taking the text element of the third list item in the XPATH.
+        Each runtime is added to a list of runtimes.
         '''
-        self.get_d1()
-        r1 = self.d1.find_element(By.XPATH, "li[3]").text
-        self.runtimes.append(r1)
 
-    def get_g1(self):
-        '''
-        
-        '''
-        self.g1 = self.driver.find_element(By.XPATH, "//div[@class = 'ipc-chip-list__scroller']")
+        runtime = self.release_age_runtime_xpath.find_element(By.XPATH, "li[3]").text
+
+        self.runtimes.append(runtime)
 
     def get_movie_genre(self):
         '''
-        
+        Scrapes the movie site for the movie genre/s by first finding the container XPATH for all genres.
+        Using try and except blocks, the text elements of all 3 HTML XPATHS is set to 3 genres then combined 
+        into a list of genres and then joined together into a string with a "/" seperator.
+        If there are only 2 genres, the text elements of the first 2 HTML XPATHS is set to 2 genres then
+        combined into a list of genres and then joined together into a string with a "/" seperator.
+        If there is only 1 genre, the text element of the first HTML XPATH is set to the genre.
+        Each genre is added to a list of genres.
         '''
-        g1 = self.driver.find_element(By.XPATH, "//div[@class = 'ipc-chip-list__scroller']")
+
+        genre_xpath = self.driver.find_element(By.XPATH, "//div[@class = 'ipc-chip-list__scroller']")
+
         try:
-            g2 = g1.find_element(By.XPATH, "a[1]").text
-            g3 = g1.find_element(By.XPATH, "a[2]").text
-            g4 = g1.find_element(By.XPATH, "a[3]").text
-            g5 = [g2, g3, g4]
-            g6 = "/".join(g5)
+            genre_1 = genre_xpath.find_element(By.XPATH, "a[1]").text
+            genre_2 = genre_xpath.find_element(By.XPATH, "a[2]").text
+            genre_3 = genre_xpath.find_element(By.XPATH, "a[3]").text
+            genre_all = [genre_1, genre_2, genre_3]
+            genre = "/".join(genre_all)
         except:
+        
             try:
-                g2 = g1.find_element(By.XPATH, "a[1]").text
-                g3 = g1.find_element(By.XPATH, "a[2]").text
-                g5 = [g2, g3]
-                g6 = "/".join(g5)
+                genre_1 = genre_xpath.find_element(By.XPATH, "a[1]").text
+                genre_2 = genre_xpath.find_element(By.XPATH, "a[2]").text
+                genre_all = [genre_1, genre_2]
+                genre = "/".join(genre_all)
+        
             except:
-                g2 = g1.find_element(By.XPATH, "a[1]").text
-                g5 = [g2]
-                g6 = "/".join(g5)
-        self.genres.append(g6)
+                genre = genre_xpath.find_element(By.XPATH, "a[1]").text
+
+        self.genres.append(genre)
         
     def get_movie_rating(self):
         '''
-        
+        Scrapes the movie site for the movie rating by first finding the text element of the container XPATH for the rating.
+        The rating is the first element of the XPATH text before the "/" and set as a float value.
+        Each rating is added to a list of ratings.  
         '''
-        mr1 = self.driver.find_element(By.XPATH, "//div[@data-testid = 'hero-rating-bar__aggregate-rating__score']").text
-        mr2 = float(mr1.rsplit("/", 1)[0])
-        self.ratings.append(mr2)
+
+        rating_xpath = self.driver.find_element(By.XPATH, "//div[@data-testid = 'hero-rating-bar__aggregate-rating__score']").text
+        rating = float(rating_xpath.rsplit("/", 1)[0])
+
+        self.ratings.append(rating)
 
     def get_movie_image(self):
         '''
+        Scrapes the movie site for the image poster of the movie by finding the image XPATH and taking the image source link.
+        Each image link is added to a list of images.
+        The image link is also returned when calling this function.
+        '''
+
+        image_xpath = self.driver.find_element(By.XPATH, "//img")
+        image = image_xpath.get_attribute("src")
+
+        self.images.append(image)
+        return image
+        
+    def download_image_data(self):
+        '''
         
         '''
-        i1 = self.driver.find_element(By.XPATH, "//img")
-        i2 = i1.get_attribute("src")
-        self.images.append(i2)
-        return i2
-        
-    def download_image_data(self, mt):
-        '''
-        
-        '''
+
         os.makedirs("raw_data/images", exist_ok = True)
-        img_url = self.get_movie_image()
-        img_data = requests.get(img_url).content
-        img_datetime = self.s_d_t.replace("-", "").replace(":", "")
-        img_id = str(self.i)
-        img_name = img_datetime + "_" + img_id
-        with open(f"raw_data/images/{img_name}.jpg", 'wb') as handler:
-            handler.write(img_data)
+
+        image_url = self.get_movie_image()
+        image_data = requests.get(image_url).content
+        image_datetime = self.datetime.replace("-", "").replace(":", "")
+        image_id = str(self.id)
+        image_name = image_datetime + "_" + image_id
+
+        with open(f"raw_data/images/{image_name}.jpg", 'wb') as handler:
+            handler.write(image_data)
 
     def download_text_data(self):
         '''
         
         '''
+
         os.makedirs("raw_data", exist_ok = True)
         with open("raw_data/data.json", "w") as fp:
             json.dump(self.data, fp, indent = 4)
@@ -222,17 +267,19 @@ class Scraper():
         '''
         
         '''
+
         self.get_movie_links()
-        for mt in self.links[:5]:
-            self.driver.get(mt)
-            self.get_id(mt)
+        for movie_link in self.links[:5]:
+            self.driver.get(movie_link)
+            self.get_id(movie_link)
             self.get_movie_title()   
+            self.get_release_age_runtime_xpath()
             self.get_movie_release_date()
             self.get_movie_age_rating()
             self.get_movie_runtime()
             self.get_movie_genre()
             self.get_movie_rating()
-            self.download_image_data(mt)
+            self.download_image_data()
             self.data = {
                 "id": self.ids, 
                 "timestamp": self.timestamps, 
