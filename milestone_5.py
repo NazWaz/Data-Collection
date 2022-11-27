@@ -46,7 +46,7 @@ class Scraper():
         Generates timestamp for when the data for each movie is scraped in the form of d-m-Y_H:M:S.
     get_movie_title
         Scrapes movie title.
-    get_d1
+    get_release_age_runtime_xpath
         Scrapes for xpath of the block containing movie release date, rating and runtime.
     get_movie_release_date
         Scrapes movie release date.
@@ -64,7 +64,8 @@ class Scraper():
         Downloads image locally to an images folder as a jpg file.
     download_text_data
         Downloads data dictionaries locally to a raw_data folder as a json file.
-    get_all_movie_text_data
+    get_all_movie_data
+        Scrapes every top movie site for data and stores it locally.
     '''
     def __init__(self):
         '''
@@ -264,7 +265,7 @@ class Scraper():
         with open("raw_data/data.json", "w") as fp:
             json.dump(self.data, fp, indent = 4)
 
-    def get_all_movie_textdata(self):
+    def get_all_movie_data(self):
         '''
         Calls all the data scraping methods in one method to collect data from every top movie site.
         Gets a list of each movie link and iterates through every scraping method using a for loop, loading each movie page.
@@ -273,7 +274,7 @@ class Scraper():
         '''
 
         self.get_movie_links()
-        for movie_link in self.links[:5]:
+        for movie_link in self.links:
             self.driver.get(movie_link)
             self.get_id(movie_link)
             self.get_movie_title()   
@@ -300,6 +301,6 @@ class Scraper():
 if __name__ == "__main__":
     scraper = Scraper()
 #%%
-scraper.get_all_movie_textdata()
+scraper.get_all_movie_data()
 #%%
 scraper.driver.quit()
