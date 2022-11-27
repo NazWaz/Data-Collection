@@ -1,11 +1,12 @@
 #%%
+import time
+import os
+import requests
+import json
 from selenium import webdriver 
 from selenium.webdriver.common.by import By
-import os
-import time
 from datetime import datetime
-import json
-import requests
+from unidecode import unidecode
 #%%
 class Scraper():
     '''
@@ -140,6 +141,7 @@ class Scraper():
         '''
         
         title = self.driver.find_element(By.XPATH, "//h1[@data-testid = 'hero-title-block__title']").text
+        title = unidecode(title)
 
         self.titles.append(title)
 
