@@ -290,6 +290,7 @@ class Scraper():
             self.get_movie_runtime()
             self.get_movie_genre()
             self.get_movie_rating()
+            self.get_image_tag()
             self.download_image_data()
             self.data = {
                 "id": self.ids, 
