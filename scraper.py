@@ -241,7 +241,7 @@ class Scraper():
         self.images.append(image)
         return image
         
-    def download_image_data(self) -> None:
+    def get_image_tag(self) -> None:
         '''
         Downloads the image locally to an images folder in a root folder "raw_data" using the image source link.
         Each image is saved in the format date_time_id.jpg.
@@ -250,13 +250,17 @@ class Scraper():
         os.makedirs("raw_data/images", exist_ok = True)
 
         image_url = self.get_movie_image()
-        image_data = requests.get(image_url).content
+        self.image_data = requests.get(image_url).content
         image_datetime = self.datetime.replace("-", "").replace(":", "")
         image_id = str(self.id)
-        image_name = image_datetime + "_" + image_id
+        self.image_name = image_datetime + "_" + image_id
 
-        with open(f"raw_data/images/{image_name}.jpg", 'wb') as handler:
-            handler.write(image_data)
+    def download_image_data(self) -> None:
+        '''
+        
+        '''
+        with open(f"raw_data/images/{self.image_name}.jpg", 'wb') as handler:
+            handler.write(self.image_data)
 
     def download_text_data(self) -> None:
         '''
@@ -267,7 +271,7 @@ class Scraper():
         with open("raw_data/data.json", "w") as fp:
             json.dump(self.data, fp, indent = 4)
 
-    def get_all_movie_data(self) -> None:
+    def get_all_movie_data(self, no_of_movies) -> None:
         '''
         Calls all the data scraping methods in one method to collect data from every top movie site.
         Gets a list of each movie link and iterates through every scraping method using a for loop, loading each movie page.
@@ -276,7 +280,7 @@ class Scraper():
         '''
 
         self.get_movie_links()
-        for movie_link in self.links[:5]:
+        for movie_link in self.links[:no_of_movies]:
             self.driver.get(movie_link)
             self.get_id(movie_link)
             self.get_movie_title()   
@@ -286,6 +290,7 @@ class Scraper():
             self.get_movie_runtime()
             self.get_movie_genre()
             self.get_movie_rating()
+            self.get_image_tag()
             self.download_image_data()
             self.data = {
                 "id": self.ids, 
@@ -305,7 +310,6 @@ class Scraper():
 
 if __name__ == "__main__":
     scraper = Scraper()
-    scraper.get_all_movie_data()
+    scraper.get_all_movie_data(no_of_movies=5)
     scraper.exit()
-
 # %%
