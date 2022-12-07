@@ -68,17 +68,17 @@ Created data scraper class and populated it with methods to extract links and sc
 
 For milestone 4, the Scraper class was populated with several methods to extract each movie page for both text and image data. More methods were added to download this text data locally in a dictionary, aswell as the images. 
 
-![1](../../../C:/AiCore/Data%20Collection%20Pipeline/Documentation/4/1.png)
+![1](Documentation/4/1.png)
 
 - The datetime, json and requests modules were imported too.
 
-![2](../../../C:/AiCore/Data%20Collection%20Pipeline/Documentation/4/2.png)
+![2](Documentation/4/2.png)
 
 - The Scraper class was initialised just like the previous class with attributes initialised as empty lists. 
 
-![3](../../../C:/AiCore/Data%20Collection%20Pipeline/Documentation/4/3.png)
+![3](Documentation/4/3.png)
 
-![***4](../../../C:/AiCore/Data%20Collection%20Pipeline/Documentation/4/4.png)
+![***4](Documentation/4/4.png)
 
 - The `get_id` method was used to get an id for each individual movie. It took a second argument `mt` which was assigned later as the movie link. Using `mt.rsplit("_", 1)[-1]`, the last element was spliced off the link (hence the -1 as it starts from the end of the string) which in this case was a number. Using `int()` the number was turned into an integer.
 
@@ -86,13 +86,13 @@ For milestone 4, the Scraper class was populated with several methods to extract
 
 - The `get_timestamp` method used the time and datetime modules to generate not only a timestamp, but to change it into the format `dd-mm-YYYY_HH:MM:SS` to make it more readable and understandable. Then the timestamps were added to `self.timestamps`.
 
-![5](../../../C:/AiCore/Data%20Collection%20Pipeline/Documentation/4/5.png)
+![5](Documentation/4/5.png)
 
 - This was the first method used to scrape data from the individual movie page. The `get_movie_title` method found the xpath containing the heading tag `h1` with the title block. Using `//h1` searched for every instance of h1 while `@data-testid = 'hero-title-block__title'` specified the id attribute to scrape. Finally the `.text` took the text element of the xpath which was the title here.
 
 - The titles were added to the list `self.titles`.
 
-![6](../../../C:/AiCore/Data%20Collection%20Pipeline/Documentation/4/6.png)
+![6](Documentation/4/6.png)
 
 - These next found an xpath to be used in the next 3 methods to scrape data. The `get_d1` method found the xpath containing the unordered list tag `ul`. This block contained 3 important pieces of data to be scraped including the release date, age rating and runtime for each movie.
 
@@ -102,7 +102,7 @@ For milestone 4, the Scraper class was populated with several methods to extract
 
 - The `get_movie_runtime` method used this same `self.d1` xpath taking the final and third list element `li[3]`, which contained the runtime. Then they were added to the list of `self.runtimes`.
 
-![***7](../../../C:/AiCore/Data%20Collection%20Pipeline/Documentation/4/7.png)
+![***7](Documentation/4/7.png)
 
 - The `get_g1` method was used to find the parent branch xpath for any of the movies genres by finding the xpath containing the container tag `div` and assigning it to `self.g1`. 
 
@@ -116,13 +116,13 @@ For milestone 4, the Scraper class was populated with several methods to extract
 
 - Whether g6 contained 3, 2 or 1 genres, it was then added to the list `self.genres`.
 
-![8](../../../C:/AiCore/Data%20Collection%20Pipeline/Documentation/4/8.png)
+![8](Documentation/4/8.png)
 
 - The `get_movie_rating` method was used to scrape the rating for each movie. First, the xpath containing this data with a container tag `div` was found. The rating was taken from here by taking the first element before the first `/` and was turned into a float value.
 
 - Then it was added to the list `self.ratings`.
 
-![9](../../../C:/AiCore/Data%20Collection%20Pipeline/Documentation/4/9.png)
+![9](Documentation/4/9.png)
 
 - The `get_all_movie_textdata` was used to combine all the existing methods in the class to scrape the list of movies and each movie for data. 
 
@@ -130,7 +130,7 @@ For milestone 4, the Scraper class was populated with several methods to extract
 
 - Then every method to scraped data was called and a dictionary `self.data` was created to add every list of data scraped too.  
 
-![10](../../../C:/AiCore/Data%20Collection%20Pipeline/Documentation/4/10.png)
+![10](Documentation/4/10.png)
 
 - The `download_text_data` method was used to download all the scraped text data as a dictionary into a json file locally. 
 
@@ -138,13 +138,13 @@ For milestone 4, the Scraper class was populated with several methods to extract
 
 - Using `with open("raw_data/data.json", "w") as fp:` was used to select where to save the data using `w` to indicate that data was being written and `fp` was the file path. Then, `json.dump(self.data, fp, indent = 4)` turned the dictionary into the json file in the assigned file path and the `indent = 4` was used to present the data in the json file more clearly.
 
-![11](../../../C:/AiCore/Data%20Collection%20Pipeline/Documentation/4/11.png)
+![11](Documentation/4/11.png)
 
 - The `get_movie_image` method was used to scrape the movie page for a reference image and then get the source link for it. First, the xpath was found containing the image tag `img` and `.get_attribute("src")` located the image source link available in this xpath.
 
 - The image link was added to the list `self.images` and each link was returned from the method.
 
-![***12](../../../C:/AiCore/Data%20Collection%20Pipeline/Documentation/4/12.png)
+![***12](Documentation/4/12.png)
 
 - The `download_image_data` method was used to download all the scraped image data locally as jpg files.
 
@@ -156,13 +156,13 @@ For milestone 4, the Scraper class was populated with several methods to extract
 
 - Finally, `with open(f"raw_data/images/{img_name}.jpg", 'wb') as handler:` and `handler.write(img_data)` wrote the image data into the selected file path as a jpg file.
 
-![13](../../../C:/AiCore/Data%20Collection%20Pipeline/Documentation/4/13.png)
+![13](Documentation/4/13.png)
 
-![14](../../../C:/AiCore/Data%20Collection%20Pipeline/Documentation/4/14.png)
+![14](Documentation/4/14.png)
 
 - The `scraper.get_all_movie_textdata()` method was called using `scraper` as the instance to run the scraper. 
 
-![15](../../../C:/AiCore/Data%20Collection%20Pipeline/Documentation/4/15.png)
+![15](Documentation/4/15.png)
 
 - Finally, `scraper.driver.quit()` was used to exit the Chrome webdriver.
 
