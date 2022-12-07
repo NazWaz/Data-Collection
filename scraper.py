@@ -61,6 +61,8 @@ class Scraper():
         Scrapes movie rating.
     get_movie_image
         Scrapes movie image source link.
+    get_image_tag
+        Gets image content and generates image tag.
     download_image_data
         Downloads image locally to an images folder as a jpg file.
     download_text_data
@@ -131,7 +133,6 @@ class Scraper():
         timestamp = time.time()
         datetimestamp = datetime.fromtimestamp(timestamp)
         self.datetime = datetimestamp.strftime("%d-%m-%Y_%H:%M:%S")
-
         self.timestamps.append(self.datetime)
         
     def get_movie_title(self) -> None:
@@ -142,7 +143,6 @@ class Scraper():
         
         title = self.driver.find_element(By.XPATH, "//h1[@data-testid = 'hero-title-block__title']").text
         title = unidecode(title)
-
         self.titles.append(title)
 
     def get_release_age_runtime_xpath(self) -> None:
@@ -161,7 +161,6 @@ class Scraper():
         '''
 
         release_date = int(self.release_age_runtime_xpath.find_element(By.XPATH, "li[1]").text)
-
         self.release_dates.append(release_date)
 
     def get_movie_age_rating(self) -> None:
@@ -171,7 +170,6 @@ class Scraper():
         '''
 
         age_rating = self.release_age_runtime_xpath.find_element(By.XPATH, "li[2]").text
-
         self.age_ratings.append(age_rating)
 
     def get_movie_runtime(self) -> None:
@@ -181,7 +179,6 @@ class Scraper():
         '''
 
         runtime = self.release_age_runtime_xpath.find_element(By.XPATH, "li[3]").text
-
         self.runtimes.append(runtime)
 
     def get_movie_genre(self) -> None:
@@ -196,7 +193,6 @@ class Scraper():
         '''
 
         genre_xpath = self.driver.find_element(By.XPATH, "//div[@class = 'ipc-chip-list__scroller']")
-
         try:
             genre_1 = genre_xpath.find_element(By.XPATH, "a[1]").text
             genre_2 = genre_xpath.find_element(By.XPATH, "a[2]").text
@@ -213,7 +209,6 @@ class Scraper():
         
             except:
                 genre = genre_xpath.find_element(By.XPATH, "a[1]").text
-
         self.genres.append(genre)
         
     def get_movie_rating(self) -> None:
@@ -225,7 +220,6 @@ class Scraper():
 
         rating_xpath = self.driver.find_element(By.XPATH, "//div[@data-testid = 'hero-rating-bar__aggregate-rating__score']").text
         rating = float(rating_xpath.rsplit("/", 1)[0])
-
         self.ratings.append(rating)
 
     def get_movie_image(self) -> None:
@@ -237,29 +231,28 @@ class Scraper():
 
         image_xpath = self.driver.find_element(By.XPATH, "//img")
         image = image_xpath.get_attribute("src")
-
         self.images.append(image)
         return image
         
     def get_image_tag(self) -> None:
         '''
-        Downloads the image locally to an images folder in a root folder "raw_data" using the image source link.
-        Each image is saved in the format date_time_id.jpg.
+        The image data is taken from the image source link.
+        A tag is generated for each image in the format date_time_id.jpg.
         '''
 
         os.makedirs("raw_data/images", exist_ok = True)
-
         image_url = self.get_movie_image()
         self.image_data = requests.get(image_url).content
         image_datetime = self.datetime.replace("-", "").replace(":", "")
         image_id = str(self.id)
-        self.image_name = image_datetime + "_" + image_id
+        self.image_tag = image_datetime + "_" + image_id
 
     def download_image_data(self) -> None:
         '''
-        
+        Downloads the image locally to an images folder in a root folder "raw_data" using the image source link.
         '''
-        with open(f"raw_data/images/{self.image_name}.jpg", 'wb') as handler:
+        
+        with open(f"raw_data/images/{self.image_tag}.jpg", 'wb') as handler:
             handler.write(self.image_data)
 
     def download_text_data(self) -> None:
