@@ -169,6 +169,83 @@ For milestone 4, the Scraper class was populated with several methods to extract
 
 ## Milestone 5
 
+For milestone 5....
+
+![Alt text](Documentation/5/Tests/1.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/2.png)
+
+-
+
+![Alt text](Documentation/5/Tests/3.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/4.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/5.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/6.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/7.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/8.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/9.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/10.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/11.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/12.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/13.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/14.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/15.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/16.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/17.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/18.png)
+
+- 
+
+![Alt text](Documentation/5/Tests/19.png)
+
+- 
 
 
 ## Milestone 6
