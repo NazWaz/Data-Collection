@@ -1,12 +1,17 @@
 #%%
+from selenium import webdriver 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from datetime import datetime
+from unidecode import unidecode
+
 import time
 import os
 import requests
 import json
-from selenium import webdriver 
-from selenium.webdriver.common.by import By
-from datetime import datetime
-from unidecode import unidecode
 
 class Scraper():
     '''
@@ -76,7 +81,7 @@ class Scraper():
         Loads the IMDB top 250 movie site using Selenium.
         '''
 
-        self.driver = webdriver.Chrome()
+        self.driver = webdriver.Chrome(ChromeDriverManager().install(), options = self.__create_options())
         url = "https://www.imdb.com/chart/top"
         self.driver.get(url)
         time.sleep(2)
@@ -92,7 +97,23 @@ class Scraper():
         self.ratings = []
         self.images = []   
 
-    def get_movie_links(self):
+    def __create_options(self):
+        
+        chrome_options = webdriver.ChromeOptions()
+    
+        chrome_options.add_argument("--headless");
+        chrome_options.add_argument("--test-type");
+        chrome_options.add_argument("--disable-gpu");
+        chrome_options.add_argument("--no-first-run");
+        chrome_options.add_argument("--no-default-browser-check");
+        chrome_options.add_argument("--ignore-certificate-errors");
+        chrome_options.add_argument("--start-maximized");
+        
+        
+        return chrome_options
+
+
+    def get_movie_links(self) -> None:
         '''
         Scrapes the top IMDB movies site for every top movie url link by first finding the XPATH 
         containing the list of top movies and then finding a list of XPATHs containing the individual url links.
@@ -124,7 +145,7 @@ class Scraper():
         self.get_timestamp()
         self.ids.append(self.id)
 
-    def get_timestamp(self):
+    def get_timestamp(self) -> None:
         '''
         Takes the timestamp and converts it into a date time format in the form d-m-Y_H:M:S.
         Each timestamp is added to a list of timestamps.
@@ -140,8 +161,7 @@ class Scraper():
         Scrapes the movie site for the movie title, taking the text element of the title heading XPATH.
         Each title is added to a list of titles.
         '''
-        
-        title = self.driver.find_element(By.XPATH, "//h1[@data-testid = 'hero-title-block__title']").text
+        title = WebDriverWait(self.driver,0).until(EC.presence_of_element_located((By.XPATH, "//h1[@data-testid = 'hero-title-block__title']"))).text
         title = unidecode(title)
         self.titles.append(title)
 
@@ -303,6 +323,9 @@ class Scraper():
 
 if __name__ == "__main__":
     scraper = Scraper()
-    scraper.get_all_movie_data(no_of_movies=5)
+    scraper.get_movie_links()
+    scraper.driver.get(scraper.links[0])
+    scraper.get_movie_title()
+    print(scraper.titles)
     scraper.exit()
 # %%
