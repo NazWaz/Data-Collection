@@ -99,18 +99,18 @@ class Scraper():
 
     def __create_options(self):
         
-        chrome_options = webdriver.ChromeOptions()
-    
-        chrome_options.add_argument("--headless");
-        chrome_options.add_argument("--test-type");
-        chrome_options.add_argument("--disable-gpu");
-        chrome_options.add_argument("--no-first-run");
-        chrome_options.add_argument("--no-default-browser-check");
-        chrome_options.add_argument("--ignore-certificate-errors");
-        chrome_options.add_argument("--start-maximized");
+        options = Options()
+        options.add_argument("--headless")
+        options.add_argument("window-size=1920,1080")
+        options.add_argument("start-maximized")
+        options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36')
+        options.add_argument('no-sandbox')
+        options.add_argument("disable-dev-shm-usage")
+
+        #chrome_options.add_argument("--start-maximized");
         
         
-        return chrome_options
+        return options
 
 
     def get_movie_links(self) -> None:
@@ -161,7 +161,7 @@ class Scraper():
         Scrapes the movie site for the movie title, taking the text element of the title heading XPATH.
         Each title is added to a list of titles.
         '''
-        title = WebDriverWait(self.driver,0).until(EC.presence_of_element_located((By.XPATH, "//h1[@data-testid = 'hero-title-block__title']"))).text
+        title = self.driver.find_element(By.XPATH, "//h1[@data-testid = 'hero-title-block__title']").text
         title = unidecode(title)
         self.titles.append(title)
 
@@ -323,9 +323,6 @@ class Scraper():
 
 if __name__ == "__main__":
     scraper = Scraper()
-    scraper.get_movie_links()
-    scraper.driver.get(scraper.links[0])
-    scraper.get_movie_title()
-    print(scraper.titles)
+    scraper.get_all_movie_data(5)
     scraper.exit()
 # %%
