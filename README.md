@@ -250,6 +250,89 @@ For milestone 5....
 
 ## Milestone 6
 
+Dockerfile
+to run docker:
+
+docker run --name "name" -e POSTGRES_PASSWORD="password" -d -p 5432:5432 -rm "image name"
+
+dockerfile:
+
+FROM python:latest # specify image:tag
+
+RUN 
+
+f # run a bash command
+
+COPY scraper.py .  # copy data from docker context
+
+RUN pip install -r requirements.txt # installs dependencies
+
+ENTRYPOINT ["python", "scraper.py"] # command runs when container is run
+
+build:
+
+`docker build -t scraper_img .`  # . means current directory and -t means tag
+
+run:
+
+`docker run --name scrapercontainer scraper_img` # gives docker image a name
+
+`docker run --name scrapercontainer --rm scraper_img` # also removes docker container after it is run
+
+`docker run --name scrapercontainer --rm -d scraper_img` # also detaches from terminal and runs it in background
+
+stop:
+
+`docker stop scrapercontainer`
+
+processes:
+
+`docker ps` # shows processes
+
+`docker ps -a` # shows containers
+
+volumes:
+
+`docker volume create "volume name"`
+
+`docker run -d --name scrapercontainer -v volume1:.`
+
+`docker run -v "path outside container":"path inside container" "container name"
+
+docker run --name scrapercont -d -v data:/test scraper_img
+
+TEST
+
+docker exec -it <name_of_the_container> bash
+
+ls
+
+exit
+
+docker container cp scrapercontainer:raw_data ./
+
+
+New ATTEMPT:
+(docker build -t "image name") - builds new image using dockerfile
+`docker build -t scraper_img .`
+
+`docker run --name scrapercontainer -dit scraper_img` 
+
+`docker exec -it scrapercontainer bash`
+
+`ls`
+
+`cd raw_data`
+
+`ls`
+
+(docker cp "container name":/"path inside docker" "path outside docker") - copies files to local directory
+`docker cp scrapercontainer:/raw_data .`
+
+USEFUL:
+
+self.driver.save_screenshot(‘C:\Users\naz_w\Downloads\screenshot.png’)
+
 
 
 # Milestone 7

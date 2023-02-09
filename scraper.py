@@ -1,11 +1,12 @@
 #%%
 from selenium import webdriver 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from webdriver_manager.firefox import GeckoDriverManager
 from datetime import datetime
 from unidecode import unidecode
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 import time
 import os
@@ -80,7 +81,7 @@ class Scraper():
         Loads the IMDB top 250 movie site using Selenium.
         '''
 
-        self.driver = webdriver.Chrome(ChromeDriverManager().install(), options = self.__create_options())
+        self.driver = webdriver.Firefox(executable_path = GeckoDriverManager().install(), options = self.__create_options())
         url = "https://www.imdb.com/chart/top"
         self.driver.get(url)
         time.sleep(2)
@@ -98,17 +99,15 @@ class Scraper():
 
     def __create_options(self):
         
-        options = Options()
+        options = FirefoxOptions()
         options.add_argument("--headless")
         options.add_argument("window-size=1920,1080")
         options.add_argument("start-maximized")
         options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36')
-        options.add_argument('no-sandbox')
-        options.add_argument("disable-dev-shm-usage")
-
-        #chrome_options.add_argument("--start-maximized");
-        
-        
+        options.add_argument('--no-sandbox')
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-setuid-sandbox")
+        options.add_argument("--disable-gpu")
         return options
 
 
@@ -189,6 +188,7 @@ class Scraper():
         '''
 
         age_rating = self.release_age_runtime_xpath.find_element(By.XPATH, "li[2]").text
+        self.driver.save_screenshot("C:/Users/naz_w/Downloads/screenshot.png")
         self.age_ratings.append(age_rating)
 
     def get_movie_runtime(self) -> None:
@@ -196,8 +196,12 @@ class Scraper():
         Scrapes the movie site for the movie runtime, taking the text element of the third list item in the XPATH.
         Each runtime is added to a list of runtimes.
         '''
+        try:
+            runtime = self.release_age_runtime_xpath.find_element(By.XPATH, "li[3]").text
+            # runtime = self.release_age_runtime_xpath.find_element(By.XPATH, "li[3]").text
+        except:
+            runtime = self.release_age_runtime_xpath.find_element(By.XPATH, "li[2]").text
 
-        runtime = self.release_age_runtime_xpath.find_element(By.XPATH, "li[3]").text
         self.runtimes.append(runtime)
 
     def get_movie_genre(self) -> None:
@@ -322,6 +326,6 @@ class Scraper():
 
 if __name__ == "__main__":
     scraper = Scraper()
-    scraper.get_all_movie_data(5)
+    scraper.get_all_movie_data(250)
     scraper.exit()
 # %%
